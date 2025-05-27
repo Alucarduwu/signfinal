@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "80973538850",
+    "project_id": "signspeak-3f22a",
+    "storage_bucket": "signspeak-3f22a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:80973538850:android:535d8497287fd7d1818c7b",
+        "android_client_info": {
+          "package_name": "host.exp.exponent"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDCwimcnbbSAoQ9CEg4JxMdnPFx4H2ixA0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

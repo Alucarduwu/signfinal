@@ -1,0 +1,43 @@
+# Carpetas del sistema de Windows
+AppData/
+Temp/
+Desktop.ini
+Thumbs.db
+
+# Archivos de sistema y ejecutables
+*.tmp
+*.bin
+*.ps1
+*.log
+*.ldb
+*.odlgz
+*.aodl
+
+# Archivos de navegador
+*.cache
+*.db
+*.dat
+
+# Archivos específicos de Opera
+Opera Software/
+
+# Ignorar carpetas internas que no deben subir
+node_modules/
+.vscode/
+.idea/
+.git/
+.expo/
+.expo-shared/
+AppData/
+Temp/
+*.tmp
+*.bin
+*.log
+*.ps1
+*.ldb
+node_modules/
+.expo/
+.git/
+.idea/
+.vscode/
+Opera Software/
