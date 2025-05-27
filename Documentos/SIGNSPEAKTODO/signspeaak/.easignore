@@ -1,0 +1,21 @@
+# Excluir todo AppData, OneDrive, Temp, navegadores, etc.
+AppData/
+*.tmp
+*.bin
+*.ps1
+*.log
+*.odlgz
+*.aodl
+*.ldb
+*.DS_Store
+*.cache
+*.db
+*.dat
+
+# Ignorar carpetas innecesarias
+node_modules/
+.git/
+.idea/
+.vscode/
+.expo/
+.expo-shared/

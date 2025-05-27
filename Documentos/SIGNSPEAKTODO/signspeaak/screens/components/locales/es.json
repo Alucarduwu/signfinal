@@ -1,0 +1,26 @@
+{
+  "idioma": "Idioma",
+  "espanol": "Español",
+  "ingles": "Inglés",
+  "inicio_sesion": "Iniciar sesión",
+  "registrarse": "Registrarse",
+  "bienvenido": "Bienvenido",
+
+
+  
+  "ultima_actualizacion": "Última actualización: 12/02/25",
+  "bienvenida": "Bienvenido/a a SignSpeak\n\nRespetamos tu privacidad y estamos comprometidos a proteger tu información personal.\n\nEsta política explica cómo recopilamos, usamos y protegemos tus datos cuando usas nuestra aplicación.",
+  "info_recopilada": "Información que Recopilamos",
+  "detalles_recopilacion": "Podemos recopilar los siguientes datos cuando usas nuestra app:\n• Datos de uso: Información sobre cómo utilizas la aplicación como funciones usadas y tiempo de uso.\n• Datos de la cámara: La aplicación puede acceder a la cámara para interpretar lenguaje de señas. No almacenamos ni compartimos estos datos.\n• Datos opcionales: Si decides crear una cuenta, podríamos solicitar nombre, correo electrónico u otros datos necesarios para la funcionalidad de la app.",
+  "uso_info": "Usamos la información recopilada para:",
+  "detalles_uso": "• Traducir lenguaje de señas a texto o voz en tiempo real.\n• Mejorar la experiencia del usuario y optimizar la funcionalidad de la app.\n• Garantizar la seguridad y evitar usos indebidos de la aplicación.",
+  "no_compartimos": "No vendemos, alquilamos ni compartimos tu información con terceros, excepto en los siguientes casos:",
+  "detalles_no_compartimos": "• Cumplimiento de la ley y requerimientos legales.\n• Servicios de terceros necesarios para el funcionamiento de la app (por ejemplo, almacenamiento en la nube).\n• Nuestra aplicación solicita acceso a la cámara para interpretar las señas en tiempo real. No almacenamos imágenes ni grabaciones.",
+  "tus_derechos": "Tienes derecho a:",
+  "detalles_derechos": "• Acceder, modificar o eliminar tus datos personales.\n• Revocar permisos otorgados a la aplicación (por ejemplo, acceso a la cámara).\n• Contactarnos en caso de dudas o inquietudes sobre tu privacidad.\n• Ser notificado sobre cambios importantes mediante la aplicación o correo electrónico (si proporcionaste uno).",
+  "contacto": "Contacto",
+  "correo_contacto": "Si tienes preguntas sobre esta política, contáctanos en:"
+
+
+}
+
