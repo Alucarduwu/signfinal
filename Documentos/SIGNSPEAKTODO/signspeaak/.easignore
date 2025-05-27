@@ -28,3 +28,16 @@ node_modules/
 .git/
 .expo/
 .expo-shared/
+AppData/
+Temp/
+*.tmp
+*.bin
+*.log
+*.ps1
+*.ldb
+node_modules/
+.expo/
+.git/
+.idea/
+.vscode/
+Opera Software/
