@@ -5,9 +5,10 @@ import {
   TouchableOpacity,
   StyleSheet,
   Image,
-  Dimensions,
   Switch,
   Alert,
+  useWindowDimensions,
+  ScrollView,
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -18,17 +19,17 @@ import NavigationBar from '../screens/components/NavigationBar';
 import ProfileModal from '../screens/components/ProfileModal';
 import { useTheme } from '../screens/context/ThemeContext';
 
-// ✅ Importación para traducciones
 import { useTranslation } from 'react-i18next';
-import '../screens/components/i18n'; // Asegúrate de que se cargue una vez
-
-const { width } = Dimensions.get('window');
+import '../screens/components/i18n';
 
 const Perfil = ({ navigation }) => {
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [userData, setUserData] = useState({ nombre: '', apellido: '' });
   const { theme, toggleTheme } = useTheme();
-  const { t } = useTranslation(); // ✅ Hook para traducción
+  const { t } = useTranslation();
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -49,7 +50,7 @@ const Perfil = ({ navigation }) => {
           }
         } else {
           console.warn('⚠️ No hay sesión iniciada');
-          Alert.alert('Error', 'No se encontró usuario en sesión. Inicia sesión nuevamente.');
+          Alert.alert(t('error'), t('errorNoSesion'));
           navigation.navigate('LoginScreen');
         }
       } catch (error) {
@@ -66,43 +67,87 @@ const Perfil = ({ navigation }) => {
   };
 
   return (
-    <View style={[styles.container, { backgroundColor: theme === 'dark' ? '#333' : '#f0f0f0' }]}>
+    <View
+      style={[
+        styles.outerContainer,
+        { backgroundColor: theme === 'dark' ? '#333' : '#f0f0f0' },
+      ]}
+    >
       <ProfileModal navigation={navigation} visible={modalVisible} onClose={closeModal} />
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          isLandscape && styles.containerLandscape,
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={[styles.header, isLandscape && styles.headerLandscape]}>
+          <Text
+            style={[
+              styles.greeting,
+              isLandscape && styles.greetingLandscape,
+              { color: theme === 'dark' ? '#fff' : '#4a148c' },
+            ]}
+          >
+            {t('hola')}, {userData.nombre || t('usuario')} {userData.apellido || ''}
+          </Text>
+          <Image
+            source={require('../assets/LOGO.12345678.jpg')}
+            style={[styles.logo, isLandscape && styles.logoLandscape]}
+            resizeMode="contain"
+          />
+        </View>
 
-      <View style={styles.header}>
-        <Text style={styles.greeting}>
-          {t('hola')}, {userData.nombre || t('usuario')} {userData.apellido || ''}
-        </Text>
-        <Image source={require('../assets/LOGO.12345678.jpg')} style={styles.logo} />
-      </View>
+        <View style={[styles.buttonsContainer, isLandscape && styles.buttonsContainerLandscape]}>
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: theme === 'dark' ? '#7e57c2' : '#4a148c' },
+              isLandscape && styles.actionButtonLandscape,
+            ]}
+            onPress={() => navigation.navigate('SignText')}
+          >
+            <Text style={styles.buttonText}>{t('senasATexto')}</Text>
+          </TouchableOpacity>
 
-      <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('SignText')}>
-        <Text style={styles.buttonText}>{t('Señas a Texto')}</Text>
-      </TouchableOpacity>
+          <TouchableOpacity
+            style={[
+              styles.actionButton,
+              { backgroundColor: theme === 'dark' ? '#7e57c2' : '#4a148c' },
+              isLandscape && styles.actionButtonLandscape,
+            ]}
+            onPress={() => navigation.navigate('TexttoSign')}
+          >
+            <Text style={styles.buttonText}>{t('textoASenas')}</Text>
+          </TouchableOpacity>
+        </View>
 
-      <TouchableOpacity style={styles.actionButton} onPress={() => navigation.navigate('TexttoSign')}>
-        <Text style={styles.buttonText}>{t('Texto a Señas')}</Text>
-      </TouchableOpacity>
-
-      <View style={styles.switchContainer}>
-        <Text
+        {/* Aquí el switch abajo en horizontal */}
+        <View
           style={[
-            styles.buttonText,
-            {
-              fontWeight: theme === 'dark' ? 'normal' : 'bold',
-              color: theme === 'dark' ? '#fff' : '#000',
-            },
+            styles.switchContainer,
+            isLandscape && styles.switchContainerLandscape,
           ]}
         >
-          {t('modo')} {theme === 'dark' ? t('oscuro') : t('claro')}
-        </Text>
-        <Switch
-          value={theme === 'dark'}
-          onValueChange={handleThemeChange}
-          trackColor={{ false: '#767577', true: '#4a148c' }}
-          thumbColor={theme === 'dark' ? '#fff' : '#4a148c'}
-        />
-      </View>
+          <Text
+            style={[
+              styles.buttonText,
+              {
+                fontWeight: theme === 'dark' ? 'normal' : 'bold',
+                color: theme === 'dark' ? '#fff' : '#000',
+              },
+            ]}
+          >
+            {t('modo')} {theme === 'dark' ? t('oscuro') : t('claro')}
+          </Text>
+          <Switch
+            value={theme === 'dark'}
+            onValueChange={handleThemeChange}
+            trackColor={{ false: '#767577', true: '#4a148c' }}
+            thumbColor={theme === 'dark' ? '#fff' : '#4a148c'}
+          />
+        </View>
+      </ScrollView>
 
       <NavigationBar navigation={navigation} />
     </View>
@@ -110,40 +155,80 @@ const Perfil = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
+  outerContainer: {
     flex: 1,
+  },
+  container: {
+    flexGrow: 1,
     alignItems: 'center',
+    paddingVertical: 20,
+    paddingHorizontal: 10,
+  },
+  containerLandscape: {
+    alignItems: 'flex-start',
+    paddingHorizontal: 40,
   },
   header: {
     width: '100%',
     alignItems: 'center',
-    marginTop: 20,
+    marginBottom: 40,
+    flexDirection: 'column',
+    justifyContent: 'center',
+  },
+  headerLandscape: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 40,
   },
   greeting: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#4a148c',
     marginBottom: 10,
+    textAlign: 'center',
+  },
+  greetingLandscape: {
+    marginRight: 15,
   },
   logo: {
-    width: width * 0.4,
-    height: width * 0.4,
+    width: 150,
+    height: 150,
+  },
+  logoLandscape: {
+    width: 120,
+    height: 120,
+  },
+  buttonsContainer: {
+    width: '80%',
+  },
+  buttonsContainerLandscape: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
   },
   actionButton: {
-    width: width * 0.8,
     padding: 20,
-    backgroundColor: '#4a148c',
     borderRadius: 25,
     marginVertical: 15,
     alignItems: 'center',
   },
+  actionButtonLandscape: {
+    width: '45%',
+  },
   switchContainer: {
-    width: width * 0.8,
+    width: '80%',
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginVertical: 15,
+  },
+  switchContainerLandscape: {
+    width: '80%',
+    marginTop: 0,
+    marginBottom: 0,
+    marginLeft: 0,
+    marginRight: 0,
+    alignSelf: 'flex-start',
   },
   buttonText: {
     fontSize: 18,

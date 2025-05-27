@@ -1,122 +1,153 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { View, StyleSheet, Button, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
-import { Camera } from 'expo-camera';
-import * as Speech from 'expo-speech';
+import React, { useState, useEffect } from 'react';
+import {
+  View,
+  StyleSheet,
+  Button,
+  ScrollView,
+  Dimensions,
+  Platform,
+  SafeAreaView,
+} from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import ProfileModal from './components/ProfileModal';
+import NavigationBar from './components/NavigationBar';
 
-import { getStorage, ref, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { app } from '../firebaseConfig'; // Ajusta esta ruta según dónde tengas tu archivo
-
-import ProfileModal from './components/ProfileModal'; // Asegúrate de que la ruta sea correcta
-import NavigationBar from './components/NavigationBar'; // Barra de navegación
-
-const storage = getStorage(app);
-const firestore = getFirestore(app);
-
-const SignText = ({navigation}) => {
-  const [hasPermission, setHasPermission] = useState(null);
-  const [isCameraOpen, setIsCameraOpen] = useState(false);
-  const [translatedText, setTranslatedText] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [uploading, setUploading] = useState(false);
-  const [videoURL, setVideoURL] = useState(null);
-  const cameraRef = useRef(null);
-  
+const TextToSign = ({ navigation }) => {
+  const [window, setWindow] = useState(Dimensions.get('window'));
 
   useEffect(() => {
-    (async () => {
-      const { status } = await Camera.requestCameraPermissionsAsync();
-      setHasPermission(status === 'granted');
-    })();
+    const onChange = ({ window }) => setWindow(window);
+
+    const subscription = Dimensions.addEventListener('change', onChange);
+
+    return () => subscription?.remove();
   }, []);
 
-  const speakText = () => {
-    Speech.speak(translatedText || "Texto de ejemplo");
-  };
-
-  const startRecording = async () => {
-    if (cameraRef.current) {
-      setIsRecording(true);
-      const video = await cameraRef.current.recordAsync();
-      await uploadVideo(video.uri);
-      setIsRecording(false);
-    }
-  };
-
-  const stopRecording = () => {
-    if (cameraRef.current) {
-      cameraRef.current.stopRecording();
-      setIsRecording(false);
-    }
-  };
-
-  const uploadVideo = async (uri) => {
-    setUploading(true);
-    try {
-      const response = await fetch(uri);
-      const blob = await response.blob();
-      const filename = `videos/${Date.now()}.mp4`;
-      const storageRef = ref(storage, filename);
-      await uploadBytes(storageRef, blob);
-      const downloadURL = await getDownloadURL(storageRef);
-      await addDoc(collection(firestore, "videos"), { url: downloadURL });
-      setVideoURL(downloadURL);
-      console.log("Video guardado en:", downloadURL);
-    } catch (error) {
-      console.error("Error subiendo el video:", error);
-    }
-    setUploading(false);
-  };
-
-  if (hasPermission === null) return <ActivityIndicator size="large" />;
-  if (hasPermission === false) return <Text>No hay acceso a la cámara</Text>;
+  const isLandscape = window.width > window.height;
 
   return (
-    
-    <View style={styles.container}>
+    <SafeAreaView style={styles.safeArea}>
       <ProfileModal navigation={navigation} />
-      <View style={styles.cameraContainer}>
-        {isCameraOpen && (
-          <Camera ref={cameraRef} style={styles.camera} type={Camera.Constants.Type.back} />
-        )}
-      </View>
 
-      <View style={styles.buttonContainer}>
-        <Button title="Iniciar" onPress={() => setIsCameraOpen(true)} color={isCameraOpen ? "#ccc" : "#4CAF50"} />
-        <Button title="Detener" onPress={() => setIsCameraOpen(false)} color={!isCameraOpen ? "#ccc" : "#f44336"} />
-      </View>
-
-      <View style={styles.textContainer}>
-        <Text>{translatedText || "Texto traducido aparecerá aquí..."}</Text>
-      </View>
-
-      <TouchableOpacity onPress={speakText} style={styles.voiceButton}>
-        <FontAwesome name="volume-up" size={24} color="white" />
-      </TouchableOpacity>
-
-      <View style={styles.buttonContainer}>
-        <Button
-          title={isRecording ? "Detener Grabación" : "Grabar Video"}
-          onPress={isRecording ? stopRecording : startRecording}
-          disabled={uploading}
+      <ScrollView
+        contentContainerStyle={[
+          styles.container,
+          isLandscape ? styles.containerLandscape : styles.containerPortrait,
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View
+          style={[
+            styles.videoContainer,
+            isLandscape ? styles.videoContainerLandscape : styles.videoContainerPortrait,
+          ]}
+          accessible
+          accessibilityLabel="Video or camera placeholder"
         />
-      </View>
 
-      {uploading && <ActivityIndicator size="large" color="#0000ff" />}
-      {videoURL && <Text>Video subido exitosamente: {videoURL}</Text>}
+        <FontAwesome
+          name="volume-up"
+          size={44}
+          color="black"
+          style={isLandscape ? styles.soundButtonLandscape : styles.soundButtonPortrait}
+          accessibilityRole="button"
+          accessibilityLabel="Sound toggle button"
+          accessibilityHint="Tap to toggle sound"
+        />
+
+        <View style={styles.buttonContainer}>
+          <View style={styles.buttonWrapper}>
+            <Button title="Iniciar traducción" color="#d8b3ff" onPress={() => {}} />
+          </View>
+          <View style={styles.buttonWrapper}>
+            <Button title="Detener" color="#d8b3ff" onPress={() => {}} />
+          </View>
+        </View>
+
+        <View
+          style={[
+            styles.textContainer,
+            isLandscape ? styles.textContainerLandscape : styles.textContainerPortrait,
+          ]}
+          accessible
+          accessibilityLabel="Text output placeholder"
+        />
+      </ScrollView>
+
       <NavigationBar navigation={navigation} />
-    </View>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  cameraContainer: { flex: 4, backgroundColor: 'black', borderRadius: 10 },
-  camera: { flex: 1 },
-  buttonContainer: { flexDirection: 'row', justifyContent: 'space-around', marginVertical: 20 },
-  textContainer: { flex: 2, backgroundColor: '#fff', padding: 15, borderRadius: 10 },
-  voiceButton: { backgroundColor: '#2196F3', padding: 15, borderRadius: 30, alignSelf: 'center' }
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#f0f0f0',
+    paddingTop: Platform.OS === 'android' ? 5 : 0, // Un poco más arriba
+  },
+  container: {
+    alignItems: 'center',
+    paddingHorizontal: 12,
+    paddingBottom: 20,
+  },
+  containerPortrait: {
+    flexDirection: 'column',
+  },
+  containerLandscape: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  videoContainer: {
+    backgroundColor: '#d3d3d3',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.15,
+    shadowRadius: 5,
+    elevation: 3,
+  },
+  videoContainerPortrait: {
+    width: '100%',
+    height: 180,
+    marginBottom: 14,
+  },
+  videoContainerLandscape: {
+    width: '45%',
+    height: 250,
+    marginBottom: 0,
+  },
+  soundButtonPortrait: {
+    marginBottom: 14,
+  },
+  soundButtonLandscape: {
+    marginHorizontal: 18,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 16,
+    marginBottom: 14,
+  },
+  buttonWrapper: {
+    marginHorizontal: 10,
+    minWidth: 130,
+  },
+  textContainer: {
+    backgroundColor: '#d3d3d3',
+    borderRadius: 10,
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  textContainerPortrait: {
+    width: '100%',
+    height: 100,
+  },
+  textContainerLandscape: {
+    width: '45%',
+    height: 250,
+  },
 });
 
-export default SignText;
+export default TextToSign;

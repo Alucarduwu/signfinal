@@ -7,14 +7,21 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  useWindowDimensions,
 } from "react-native";
 
+import { useTranslation } from 'react-i18next';
+import '../screens/components/i18n'; // Asegúrate que la configuración i18n se cargue
+
 const PasswordRecoveryScreen = ({ navigation }) => {
+  const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+
   const [email, setEmail] = useState("");
 
   const handlePasswordReset = async () => {
     if (!email) {
-      Alert.alert("Error", "Por favor, ingresa tu correo electrónico.");
+      Alert.alert(t('passwordRecovery.errorTitle'), t('passwordRecovery.errorEmail'));
       return;
     }
 
@@ -35,35 +42,44 @@ const PasswordRecoveryScreen = ({ navigation }) => {
 
       if (response.ok) {
         Alert.alert(
-          "Correo Enviado",
-          "Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.",
-          [{ text: "OK", onPress: () => navigation.navigate("LoginScreen") }]
+          t('passwordRecovery.emailSentTitle'),
+          t('passwordRecovery.emailSentMessage'),
+          [{ text: t('ok'), onPress: () => navigation.navigate("LoginScreen") }]
         );
       } else {
-        Alert.alert("Error", data.error?.message || "No se pudo enviar el correo.");
+        Alert.alert(t('error'), data.error?.message || t('passwordRecovery.errorSend'));
       }
     } catch (error) {
-      Alert.alert("Error", "Error de red o conexión.");
+      Alert.alert(t('error'), t('passwordRecovery.errorNetwork'));
     }
   };
 
+  const isPortrait = height >= width;
+
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Recuperación de contraseña</Text>
-      <Text style={styles.subText}>
-        Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.
-      </Text>
+    <ScrollView
+      contentContainerStyle={[
+        styles.container,
+        isPortrait ? styles.portraitContainer : styles.landscapeContainer,
+      ]}
+      keyboardShouldPersistTaps="handled"
+    >
+      <Text style={styles.header}>{t('passwordRecovery.header')}</Text>
+      <Text style={styles.subText}>{t('passwordRecovery.subText')}</Text>
       <TextInput
-        style={styles.input}
-        placeholder="Correo Electrónico"
+        style={[styles.input, { width: isPortrait ? "100%" : "50%" }]}
+        placeholder={t('passwordRecovery.emailPlaceholder')}
         placeholderTextColor="#666"
         value={email}
         onChangeText={setEmail}
         keyboardType="email-address"
         autoCapitalize="none"
       />
-      <TouchableOpacity style={styles.button} onPress={handlePasswordReset}>
-        <Text style={styles.buttonText}>Restablecer Contraseña</Text>
+      <TouchableOpacity
+        style={[styles.button, { width: isPortrait ? "100%" : "50%" }]}
+        onPress={handlePasswordReset}
+      >
+        <Text style={styles.buttonText}>{t('passwordRecovery.resetButton')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -76,6 +92,13 @@ const styles = StyleSheet.create({
     padding: 30,
     justifyContent: "center",
     alignItems: "center",
+  },
+  portraitContainer: {
+    flexDirection: "column",
+  },
+  landscapeContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
   header: {
     fontSize: 26,
@@ -91,7 +114,6 @@ const styles = StyleSheet.create({
     marginBottom: 25,
   },
   input: {
-    width: "100%",
     padding: 15,
     backgroundColor: "#f0e6f6",
     borderRadius: 12,
@@ -103,8 +125,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#6a1b9a",
     padding: 15,
     borderRadius: 12,
-    width: "100%",
     alignItems: "center",
+    marginBottom: 15,
   },
   buttonText: {
     color: "#fff",

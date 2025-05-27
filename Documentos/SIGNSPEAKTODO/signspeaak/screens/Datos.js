@@ -7,12 +7,21 @@ import {
   StyleSheet,
   ScrollView,
   Alert,
+  useWindowDimensions,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 import { doc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
-import { logEvent } from "../screens/utils/logEevents";
+
+import { useTranslation } from "react-i18next";
+import "../screens/components/i18n";
 
 const Datos = ({ navigation, route }) => {
+  const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
   const [uid, setUid] = useState("");
   const [email, setEmail] = useState("");
   const [nombre, setNombre] = useState("");
@@ -23,33 +32,27 @@ const Datos = ({ navigation, route }) => {
   useEffect(() => {
     const { uid: passedUid, email: passedEmail } = route.params || {};
     if (!passedUid || !passedEmail) {
-      Alert.alert("Error", "Faltan datos del usuario.");
+      Alert.alert(t("datos.error"), t("datos.errorNoUid"));
       navigation.navigate("RegisterScreen");
       return;
     }
-
     setUid(passedUid);
     setEmail(passedEmail);
-    console.log("✅ UID recibido:", passedUid);
-    console.log("✅ Email recibido:", passedEmail);
   }, []);
 
   const handleRegister = async () => {
     if (!uid) {
-      Alert.alert("Error", "No se puede registrar sin UID válido.");
+      Alert.alert(t("datos.error"), t("datos.errorNoUid"));
       return;
     }
-
     if (!nombre.trim() || !apellidos.trim() || !edad.trim() || !genero.trim()) {
-      Alert.alert("Error", "Todos los campos son obligatorios.");
+      Alert.alert(t("datos.error"), t("datos.errorMissing"));
       return;
     }
-
     if (isNaN(edad) || parseInt(edad) <= 0) {
-      Alert.alert("Error", "La edad debe ser un número válido mayor a 0.");
+      Alert.alert(t("datos.error"), t("datos.errorInvalidAge"));
       return;
     }
-
     try {
       const userData = {
         uid,
@@ -59,51 +62,105 @@ const Datos = ({ navigation, route }) => {
         edad: parseInt(edad),
         genero: genero.trim(),
       };
-
       await setDoc(doc(firestore, "users", uid), userData, { merge: true });
-      await logEvent("completado_datos", `Usuario completó su perfil (${email})`, uid);
+      // Solo log en consola, no llamada externa
+      console.log(`📋 Evento: completado_datos - Usuario completó su perfil (${email}) (UID: ${uid})`);
 
-      console.log("✅ Usuario guardado exitosamente en Firestore");
-
-      Alert.alert("Registro Exitoso", "Tu cuenta ha sido completada.", [
-        { text: "OK", onPress: () => navigation.navigate("LoginScreen") },
+      Alert.alert(t("datos.successRegister"), "", [
+        { text: t("datos.ok"), onPress: () => navigation.navigate("LoginScreen") },
       ]);
     } catch (error) {
-      console.error("❌ Error guardando en Firestore:", error);
-      Alert.alert("Error", "Hubo un problema al guardar tus datos.");
+      Alert.alert(t("datos.error"), t("datos.errorSave"));
     }
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Ingresa Datos</Text>
-      <TextInput style={styles.input} placeholder="Nombre(s)" value={nombre} onChangeText={setNombre} />
-      <TextInput style={styles.input} placeholder="Apellidos" value={apellidos} onChangeText={setApellidos} />
-      <TextInput style={styles.input} placeholder="Edad" value={edad} onChangeText={setEdad} keyboardType="numeric" />
-      <TextInput style={styles.input} placeholder="Género" value={genero} onChangeText={setGenero} />
-      <Text style={styles.notice}>
-        Al registrarte, aceptas que usemos tu información con fines estadísticos.
-      </Text>
-      <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrarse</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    <KeyboardAvoidingView
+      style={{ flex: 1 }}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+    >
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContainer,
+          isLandscape && styles.scrollContainerLandscape,
+        ]}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={[styles.container, isLandscape && styles.containerLandscape]}>
+          {/* Columna 1 */}
+          <View style={[styles.column, isLandscape && styles.columnLandscape]}>
+            <Text style={styles.header}>{t("datos.header")}</Text>
+            <TextInput
+              style={styles.input}
+              placeholder={t("datos.nombre")}
+              value={nombre}
+              onChangeText={setNombre}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder={t("datos.apellidos")}
+              value={apellidos}
+              onChangeText={setApellidos}
+            />
+          </View>
+
+          {/* Columna 2 */}
+          <View style={[styles.column, isLandscape && styles.columnLandscape]}>
+            <TextInput
+              style={styles.input}
+              placeholder={t("datos.edad")}
+              value={edad}
+              onChangeText={setEdad}
+              keyboardType="numeric"
+            />
+            <TextInput
+              style={styles.input}
+              placeholder={t("datos.genero")}
+              value={genero}
+              onChangeText={setGenero}
+            />
+            <Text style={styles.notice}>{t("datos.notice")}</Text>
+            <TouchableOpacity style={styles.button} onPress={handleRegister}>
+              <Text style={styles.buttonText}>{t("datos.buttonRegister")}</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
+  scrollContainer: {
     flexGrow: 1,
     backgroundColor: "#f9f9f9",
     padding: 30,
     justifyContent: "center",
     alignItems: "center",
   },
+  scrollContainerLandscape: {
+    paddingHorizontal: 60,
+  },
+  container: {
+    width: "100%",
+  },
+  containerLandscape: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  column: {
+    width: "100%",
+  },
+  columnLandscape: {
+    width: "48%",
+  },
   header: {
     fontSize: 26,
     fontWeight: "700",
     color: "#6a1b9a",
     marginBottom: 30,
+    textAlign: "center",
   },
   input: {
     width: "100%",

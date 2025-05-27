@@ -1,10 +1,18 @@
 {
-  "idioma": "Idioma",
+  
   "espanol": "Español",
   "ingles": "Inglés",
   "inicio_sesion": "Iniciar sesión",
   "registrarse": "Registrarse",
   "bienvenido": "Bienvenido",
+
+ 
+  "idioma": {
+    "titulo": "Selecciona un idioma",
+    "espanol": "Español",
+    "ingles": "Inglés"
+  },
+
 
 
   
@@ -19,7 +27,179 @@
   "tus_derechos": "Tienes derecho a:",
   "detalles_derechos": "• Acceder, modificar o eliminar tus datos personales.\n• Revocar permisos otorgados a la aplicación (por ejemplo, acceso a la cámara).\n• Contactarnos en caso de dudas o inquietudes sobre tu privacidad.\n• Ser notificado sobre cambios importantes mediante la aplicación o correo electrónico (si proporcionaste uno).",
   "contacto": "Contacto",
-  "correo_contacto": "Si tienes preguntas sobre esta política, contáctanos en:"
+  "correo_contacto": "Si tienes preguntas sobre esta política, contáctanos en:",
+
+  
+  "help": {
+    "title": "Deja tus dudas/comentarios",
+    "tutorialLink": "- Si tienes duda de la funcionalidad en configuraciones puedes acceder a un mini tutorial.",
+    "privacyLink": "- ¿Quiénes somos? Checa las políticas de privacidad.",
+    "question": "¿Tienes alguna otra duda? Háznosla saber:",
+    "placeholder": "Escribe aquí...",
+    "save": "Guardar",
+    "footer": "- Serás contactado vía correo electrónico en caso de ser necesario seguimiento.",
+    "commentSaved": "Comentario guardado. Te contactaremos pronto."
+  },
+
+  
+  "datos": {
+    "header": "Ingresa Datos",
+    "nombre": "Nombre(s)",
+    "apellidos": "Apellidos",
+    "edad": "Edad",
+    "genero": "Género",
+    "notice": "Al registrarte, aceptas que usemos tu información con fines estadísticos.",
+    "buttonRegister": "Registrarse",
+    "errorMissing": "Todos los campos son obligatorios.",
+    "errorInvalidAge": "La edad debe ser un número válido mayor a 0.",
+    "errorNoUid": "No se puede registrar sin UID válido.",
+    "successRegister": "Tu cuenta ha sido completada.",
+    "errorSave": "Hubo un problema al guardar tus datos."
+  },
+  
+  
+  
+  "perfil": {
+    "hola": "Hola",
+    "usuario": "Usuario",
+    "nombre": "Nombre",
+    "apellidos": "Apellidos",
+    "edad": "Edad",
+    "genero": "Género",
+    "email": "Correo electrónico",
+    "telefono": "Teléfono",
+    "guardar": "Guardar",
+    "error": "Error",
+    "errorLoad": "No se pudieron cargar los datos del perfil",
+    "errorUpdate": "No se pudo actualizar tu perfil",
+    "notAuthenticated": "Usuario no autenticado",
+    "success": "Éxito",
+    "successUpdate": "Perfil actualizado con éxito"
+  },
+
+  
+  "historial": {
+    "filterPlaceholder": "Filtrar por...",
+    "unknownDate": "Fecha desconocida",
+    "errorGettingLogs": "Error al obtener registros"
+  },
+  
+  "home": {
+    "description": "Una aplicación innovadora que traduce lenguaje de señas a texto y voz en tiempo real, facilitando la comunicación entre personas sordas y oyentes."
+  },
+
+  "hola": "Hola",
+  "usuario": "Usuario",
+  "error": "Error",
+  "errorNoSesion": "No se encontró usuario en sesión. Inicia sesión nuevamente.",
+  "senasATexto": "Señas a Texto",
+  "textoASenas": "Texto a Señas",
+  "modo": "Modo",
+  "oscuro": "Oscuro",
+  "claro": "Claro",
+  "errorSinCamara": "No se puede acceder a la cámara",
+
+  
+  "nav": {
+    "cerrarSesionTitle": "Cerrar sesión",
+    "cerrarSesionMessage": "¿Estás seguro de que quieres cerrar sesión?",
+    "cancelar": "Cancelar",
+    "cerrarSesion": "Cerrar sesión"
+  },
+ 
+  "menu": {
+    "idioma": "Idioma",
+    "volumen": "Volumen",
+    "historial": "Historial",
+    "tutorial": "Tutorial",
+    "ayuda": "Ayuda",
+    "configuraciones": "Configuraciones",
+    "modoOscuro": "Modo Oscuro",
+    "modoClaro": "Modo Claro"
+  },
+  "modal": {
+    "logoutTitle": "Cerrar sesión",
+    "logoutMessage": "¿Estás seguro de que quieres cerrar sesión?",
+    "cancel": "Cancelar",
+    "logout": "Cerrar sesión",
+    "elegirCuenta": "Elegir cuenta",
+    "agregarCuenta": "Agregar nueva cuenta",
+    "politicasPrivacidad": "Políticas de privacidad",
+    "editarPerfil": "Editar perfil",
+    "cerrarSesion": "Cerrar sesión"
+  },
+  
+  "login": {
+    "errorTitle": "Error",
+    "errorFill": "Por favor ingresa correo y contraseña.",
+    "errorDefault": "Ocurrió un error.",
+    "errorNetwork": "Error de red.",
+    "successTitle": "Inicio de Sesión Exitoso",
+    "welcome": "Bienvenido:",
+    "header": "Inicio de Sesión",
+    "emailPlaceholder": "Correo",
+    "passwordPlaceholder": "Contraseña",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "loginButton": "Iniciar Sesión",
+    "orRegister": "o Registrarse en",
+    "register": "Registro"
+  },
+  
+  "passwordRecovery": {
+    "header": "Recuperación de contraseña",
+    "subText": "Ingresa tu correo y te enviaremos un enlace para restablecer tu contraseña.",
+    "emailPlaceholder": "Correo Electrónico",
+    "resetButton": "Restablecer Contraseña",
+    "errorTitle": "Error",
+    "errorEmail": "Por favor, ingresa tu correo electrónico.",
+    "emailSentTitle": "Correo Enviado",
+    "emailSentMessage": "Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.",
+    "errorSend": "No se pudo enviar el correo.",
+    "errorNetwork": "Error de red o conexión."
+  },
+  
+  "register": {
+    "header": "Registro",
+    "emailPlaceholder": "Ingresa tu correo",
+    "passwordPlaceholder": "Ingresa la contraseña",
+    "confirmPasswordPlaceholder": "Vuelve a ingresar la contraseña",
+    "registerButton": "Registrarse",
+    "orLogin": "o Iniciar sesión en",
+    "loginLink": "Iniciar sesión",
+    "errorTitle": "Error",
+    "errorFill": "Todos los campos son obligatorios.",
+    "errorPasswordMismatch": "Las contraseñas no coinciden.",
+    "errorDefault": "No se pudo registrar.",
+    "successTitle": "Éxito",
+    "successMessage": "Registro exitoso.",
+    "newUserRegistered": "Nuevo usuario registrado con el correo"
+  }
+
+ 
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 }

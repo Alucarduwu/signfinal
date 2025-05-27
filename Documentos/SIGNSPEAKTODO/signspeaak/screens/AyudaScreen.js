@@ -1,59 +1,94 @@
 import React from 'react';
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Linking,
+  Alert,
+  useWindowDimensions,
+  ScrollView,
+} from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import ProfileModal from './components/ProfileModal'; // Importa ProfileModal
-import NavigationBar from './components/NavigationBar'; // Importa NavigationBar
+import { useTranslation } from 'react-i18next';
+import ProfileModal from '../screens/components/ProfileModal';
+import NavigationBar from '../screens/components/NavigationBar';
 
 const AyudaScreen = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   const handleSave = () => {
-    alert('Comentario guardado. Te contactaremos pronto.');
+    Alert.alert(t('help.commentSaved'));
   };
 
   return (
     <View style={styles.container}>
-      {/* Header: ProfileModal */}
       <ProfileModal navigation={navigation} />
 
-      {/* Contenido de la pantalla */}
-      <View style={styles.content}>
-        <Text style={styles.title}>Deja tus dudas/comentarios</Text>
-        <Text style={styles.link} onPress={() => Linking.openURL('https://tutorial.link')}>
-          - Si tienes duda de la funcionalidad en configuraciones puedes acceder a un mini tutorial.
-        </Text>
-        <Text style={styles.link} onPress={() => Linking.openURL('https://privacidad.link')}>
-          - ¿Quiénes somos? Checa las políticas de privacidad.
-        </Text>
+      <ScrollView contentContainerStyle={[styles.content, isLandscape && styles.contentLandscape]}>
+        <View style={isLandscape ? styles.leftColumn : null}>
+          <Text style={styles.title}>{t('help.title')}</Text>
+          <Text
+            style={styles.link}
+            onPress={() => Linking.openURL('https://tutorial.link')}
+            accessibilityRole="link"
+          >
+            {t('help.tutorialLink')}
+          </Text>
+          <Text
+            style={styles.link}
+            onPress={() => Linking.openURL('https://privacidad.link')}
+            accessibilityRole="link"
+          >
+            {t('help.privacyLink')}
+          </Text>
+          <Text style={styles.question}>{t('help.question')}</Text>
+        </View>
 
-        <Text style={styles.question}>¿Tienes alguna otra duda? Háznosla saber:</Text>
-        <TextInput style={styles.input} placeholder="Escribe aquí..." multiline={true} />
+        <View style={isLandscape ? styles.rightColumn : null}>
+          <TextInput
+            style={[styles.input, isLandscape && styles.inputLandscape]}
+            placeholder={t('help.placeholder')}
+            multiline={true}
+            textAlignVertical="top"
+          />
+          <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+            <Text style={styles.saveButtonText}>{t('help.save')}</Text>
+          </TouchableOpacity>
+          <Text style={styles.footer}>{t('help.footer')}</Text>
+        </View>
+      </ScrollView>
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Guardar</Text>
-        </TouchableOpacity>
-
-        <Text style={styles.footer}>
-          - Serás contactado vía correo electrónico en caso de ser necesario seguimiento.
-        </Text>
-      </View>
-
-      {/* NavigationBar en la parte inferior */}
       <NavigationBar navigation={navigation} />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
+  container: { flex: 1, backgroundColor: '#fff' },
   content: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
-    marginTop: 80, // Ajusta este valor según la altura del header
-    marginBottom: 60, // Ajusta este valor según la altura del NavigationBar
+    marginTop: 80,
+    marginBottom: 60,
+  },
+  contentLandscape: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  leftColumn: {
+    flex: 1,
+    marginRight: 10,
+  },
+  rightColumn: {
+    flex: 1,
+    marginLeft: 10,
   },
   title: {
     fontSize: 20,
@@ -80,6 +115,10 @@ const styles = StyleSheet.create({
     marginVertical: 20,
     padding: 10,
     backgroundColor: '#f5f5f5',
+    width: '100%',
+  },
+  inputLandscape: {
+    height: 200,
   },
   saveButton: {
     backgroundColor: '#E9D5FF',

@@ -15,25 +15,34 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { FontAwesome } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
-const { width, height } = Dimensions.get('window');
+import { useTranslation } from 'react-i18next';
+import '../components/i18n'; // Asegúrate de cargar la configuración i18n
+
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useWindowDimensions } from 'react-native';
 
 const ProfileModal = () => {
   const navigation = useNavigation();
+  const { t } = useTranslation();
+
+  const insets = useSafeAreaInsets();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
+
   const [menuVisible, setMenuVisible] = useState(false);
   const slideAnim = useRef(new Animated.Value(-width * 0.75)).current;
   const [modalVisible, setModalVisible] = useState(false);
-  const [isDarkMode, setIsDarkMode] = useState(false); // Estado para el modo oscuro
+  const [isDarkMode, setIsDarkMode] = useState(false);
   const emails = [
-    
+    // Aquí puedes poner los emails si los tienes
   ];
 
-  // Opciones del menú con sus pantallas correspondientes
   const menuOptions = [
-    { name: 'Idioma', screen: 'IdiomaScreen' },
-    { name: 'Volumen', screen: 'VolumenScreen' },
-    { name: 'Historial', screen: 'HistorialScreen' },
-    { name: 'Tutorial', screen: 'TutorialScreen' },
-    { name: 'Ayuda', screen: 'AyudaScreen' },
+    { name: t('menu.idioma'), screen: 'IdiomaScreen' },
+    { name: t('menu.volumen'), screen: 'VolumenScreen' },
+    { name: t('menu.historial'), screen: 'HistorialScreen' },
+    { name: t('menu.tutorial'), screen: 'TutorialScreen' },
+    { name: t('menu.ayuda'), screen: 'AyudaScreen' },
   ];
 
   const toggleMenu = () => {
@@ -50,86 +59,90 @@ const ProfileModal = () => {
   };
 
   const handleLogout = () => {
-    // Mostrar un mensaje de confirmación antes de cerrar sesión
     Alert.alert(
-      'Cerrar sesión',
-      '¿Estás seguro de que quieres cerrar sesión?',
+      t('modal.logoutTitle'),
+      t('modal.logoutMessage'),
       [
-        {
-          text: 'Cancelar',
-          style: 'cancel',
-        },
-        {
-          text: 'Cerrar sesión',
-          onPress: () => navigation.navigate('LoginScreen'), // Navega a LoginScreen
-        },
+        { text: t('modal.cancel'), style: 'cancel' },
+        { text: t('modal.logout'), onPress: () => navigation.navigate('LoginScreen') },
       ],
       { cancelable: false }
     );
   };
 
   const toggleDarkMode = () => {
-    setIsDarkMode(!isDarkMode); // Alterna entre modo claro y oscuro
+    setIsDarkMode(!isDarkMode);
   };
 
   return (
     <>
       {/* Header */}
-      <LinearGradient colors={['#f0f0f0', '#e0e0e0']} style={styles.container}>
+      <LinearGradient colors={['#f0f0f0', '#e0e0e0']} style={[styles.container, {
+        paddingTop: insets.top + 10,
+        paddingLeft: insets.left + 20,
+        paddingRight: insets.right + 20,
+        paddingBottom: 10,
+      }]}>
         <TouchableOpacity style={styles.menuButton} onPress={toggleMenu}>
           <FontAwesome name="bars" size={24} color="#333" />
         </TouchableOpacity>
 
         <Text style={styles.title}>SignSpeak</Text>
 
-        <TouchableOpacity
-          style={styles.profileButton}
-          onPress={() => setModalVisible(true)}
-        >
+        <TouchableOpacity style={styles.profileButton} onPress={() => setModalVisible(true)}>
           <FontAwesome name="user" size={24} color="#333" />
         </TouchableOpacity>
       </LinearGradient>
 
       {/* Overlay para cerrar el menú */}
-      {menuVisible && (
-        <Pressable style={styles.overlay} onPress={toggleMenu} />
-      )}
+      {menuVisible && <Pressable style={styles.overlay} onPress={toggleMenu} />}
 
-      {/* Menú que se superpone sobre toda la pantalla */}
-      <Animated.View style={[styles.menuDrawer, { transform: [{ translateX: slideAnim }] }]}>
-        <Text style={styles.menuHeader}>Configuraciones</Text>
+      {/* Menú lateral */}
+      <Animated.View style={[
+        styles.menuDrawer,
+        { transform: [{ translateX: slideAnim }] },
+        {
+          paddingTop: insets.top + 20,
+          paddingBottom: insets.bottom + 20,
+          paddingLeft: insets.left + 20,
+          paddingRight: insets.right + 20,
+          height: isLandscape ? '100%' : '100%',
+        }
+      ]}>
+        <Text style={styles.menuHeader}>{t('menu.configuraciones')}</Text>
         {menuOptions.map((item, index) => (
           <TouchableOpacity
             key={index}
             onPress={() => {
-              navigation.navigate(item.screen); // Navega a la pantalla correspondiente
-              toggleMenu(); // Cierra el menú después de navegar
+              navigation.navigate(item.screen);
+              toggleMenu();
             }}
             style={styles.menuItem}
           >
             <Text style={styles.menuText}>{item.name}</Text>
           </TouchableOpacity>
         ))}
-        
-        {/* Agregamos el botón para cambiar de claro a oscuro */}
-        <TouchableOpacity
-          onPress={toggleDarkMode}
-          style={[styles.menuItem, styles.themeButton]}
-        >
+
+        <TouchableOpacity onPress={toggleDarkMode} style={[styles.menuItem, styles.themeButton]}>
           <Text style={styles.menuText}>
-            {isDarkMode ? 'Modo Claro' : 'Modo Oscuro'}
+            {isDarkMode ? t('menu.modoClaro') : t('menu.modoOscuro')}
           </Text>
         </TouchableOpacity>
       </Animated.View>
 
       {/* Modal */}
       <Modal transparent visible={modalVisible} animationType="fade" onRequestClose={closeModal}>
-        <Pressable style={styles.modalOverlay} onPress={closeModal}>
+        <Pressable style={[styles.modalOverlay, {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        }]} onPress={closeModal}>
           <View style={styles.modalContent}>
             <TouchableOpacity onPress={closeModal} style={styles.closeButton}>
               <FontAwesome name="close" size={24} color="#333" />
             </TouchableOpacity>
-            <Text style={styles.modalHeader}>Elegir cuenta</Text>
+            <Text style={styles.modalHeader}>{t('modal.elegirCuenta')}</Text>
             <View style={styles.accountListContainer}>
               <View style={styles.accountList}>
                 {emails.map((email, index) => (
@@ -140,20 +153,20 @@ const ProfileModal = () => {
                 ))}
                 <TouchableOpacity style={styles.accountItem}>
                   <FontAwesome name="plus-square" size={16} color="#666" />
-                  <Text style={styles.accountText}>Agregar nueva cuenta</Text>
+                  <Text style={styles.accountText}>{t('modal.agregarCuenta')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
             <View style={styles.footer}>
               <TouchableOpacity onPress={() => navigation.navigate('PrivacidadScreen')}>
-                <Text style={styles.footerText}>Políticas de privacidad</Text>
+                <Text style={styles.footerText}>{t('modal.politicasPrivacidad')}</Text>
               </TouchableOpacity>
               <View style={styles.footerButtons}>
                 <TouchableOpacity onPress={() => navigation.navigate('EditarPerfil')}>
-                  <Text style={styles.footerButtonText}>Editar perfil</Text>
+                  <Text style={styles.footerButtonText}>{t('modal.editarPerfil')}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity onPress={handleLogout}>
-                  <Text style={styles.footerButtonText}>Cerrar sesión</Text>
+                  <Text style={styles.footerButtonText}>{t('modal.cerrarSesion')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -167,27 +180,24 @@ const ProfileModal = () => {
 const styles = StyleSheet.create({
   container: {
     position: 'relative',
-    width: '100%', // Asegura que ocupe todo el ancho
-    marginTop: 0.5, 
+    width: '100%',
+    marginTop: 0.5,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingTop: 40, // Evita que la barra de estado lo oculte
-    paddingHorizontal: 20,
-    paddingBottom: 10,
-    borderRadius: 20, // Aplica el redondeo a todos los bordes
+    borderRadius: 20,
     backgroundColor: '#f0f0f0',
     elevation: 5,
     zIndex: 1,
-    overflow: 'hidden', // Asegura que los bordes redondeados se respeten
+    overflow: 'hidden',
   },
   menuButton: {
     padding: 10,
   },
   profileButton: {
     padding: 10,
-    backgroundColor: '#e0e0e0', // Fondo gris claro
-    borderRadius: 20, // Bordes redondeados
+    backgroundColor: '#e0e0e0',
+    borderRadius: 20,
   },
   title: {
     fontSize: 20,
@@ -247,8 +257,8 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: 20,
     padding: 20,
-    borderWidth: 1, // Borde del modal
-    borderColor: '#ddd', // Color del borde
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   closeButton: {
     alignSelf: 'flex-end',
@@ -290,7 +300,7 @@ const styles = StyleSheet.create({
   },
   footerButtonText: {
     fontSize: 14,
-    color: '#333', // Color gris oscuro
+    color: '#333',
   },
 });
 

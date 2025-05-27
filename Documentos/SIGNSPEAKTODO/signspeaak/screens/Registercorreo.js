@@ -11,24 +11,29 @@ import {
 import { doc, setDoc } from "firebase/firestore";
 import { firestore } from "../firebaseConfig";
 
+import { useTranslation } from 'react-i18next';
+import '../screens/components/i18n'; // Importa la configuración i18n global
+
 // Reemplazo de logEvent para que solo registre en consola
 const logEvent = (evento, mensaje, uid = null) => {
   console.log(`📋 Evento: ${evento} - ${mensaje}${uid ? ` (UID: ${uid})` : ""}`);
 };
 
 const Registercorreo = ({ navigation }) => {
+  const { t } = useTranslation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const handleRegister = async () => {
     if (!email || !password || !confirmPassword) {
-      Alert.alert("Error", "Todos los campos son obligatorios.");
+      Alert.alert(t('register.errorTitle'), t('register.errorFillAllFields'));
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Error", "Las contraseñas no coinciden.");
+      Alert.alert(t('register.errorTitle'), t('register.errorPasswordMismatch'));
       return;
     }
 
@@ -48,7 +53,7 @@ const Registercorreo = ({ navigation }) => {
 
       const data = await response.json();
       if (!response.ok) {
-        throw new Error(data.error.message || "No se pudo registrar.");
+        throw new Error(data.error.message || t('register.errorDefault'));
       }
 
       const uid = data.localId;
@@ -58,26 +63,26 @@ const Registercorreo = ({ navigation }) => {
         createdAt: new Date(),
       });
 
-      logEvent("registro", `Nuevo usuario registrado con el correo ${email}`, uid);
+      logEvent("registro", `${t('register.newUserRegistered')} ${email}`, uid);
 
       await new Promise((resolve) => {
-        Alert.alert("Éxito", "Registro exitoso.", [{ text: "OK", onPress: resolve }]);
+        Alert.alert(t('register.successTitle'), t('register.successMessage'), [{ text: t('ok'), onPress: resolve }]);
       });
 
       navigation.replace("Datos", { uid, email });
     } catch (error) {
       console.error("❌ Error en el registro:", error);
-      Alert.alert("Error", error.message);
+      Alert.alert(t('register.errorTitle'), error.message);
     }
   };
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.header}>Registro</Text>
+      <Text style={styles.header}>{t('register.header')}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Ingresa tu correo"
+          placeholder={t('register.emailPlaceholder')}
           placeholderTextColor="#666"
           value={email}
           onChangeText={setEmail}
@@ -86,7 +91,7 @@ const Registercorreo = ({ navigation }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Ingresa la contraseña"
+          placeholder={t('register.passwordPlaceholder')}
           secureTextEntry
           placeholderTextColor="#666"
           value={password}
@@ -94,7 +99,7 @@ const Registercorreo = ({ navigation }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Vuelve a ingresar la contraseña"
+          placeholder={t('register.confirmPasswordPlaceholder')}
           secureTextEntry
           placeholderTextColor="#666"
           value={confirmPassword}
@@ -102,11 +107,11 @@ const Registercorreo = ({ navigation }) => {
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleRegister}>
-        <Text style={styles.buttonText}>Registrarse</Text>
+        <Text style={styles.buttonText}>{t('register.registerButton')}</Text>
       </TouchableOpacity>
-      <Text style={styles.textCenter}>o Iniciar sesión en</Text>
+      <Text style={styles.textCenter}>{t('register.orLogin')}</Text>
       <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
-        <Text style={styles.linkText}>Iniciar sesión</Text>
+        <Text style={styles.linkText}>{t('register.loginLink')}</Text>
       </TouchableOpacity>
     </ScrollView>
   );

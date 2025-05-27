@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, useWindowDimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useTranslation } from 'react-i18next';
 import '../screens/components/i18n'; // asegúrate de importar la configuración
@@ -10,12 +10,19 @@ import NavigationBar from './components/NavigationBar';
 const PrivacyPolicyScreen = () => {
   const navigation = useNavigation();
   const { t } = useTranslation();
+  const { width, height } = useWindowDimensions();
+  const isLandscape = width > height;
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, isLandscape && styles.containerLandscape]}>
       <ProfileModal navigation={navigation} />
 
-      <ScrollView contentContainerStyle={styles.scrollContent}>
+      <ScrollView
+        contentContainerStyle={[
+          styles.scrollContent,
+          isLandscape && styles.scrollContentLandscape,
+        ]}
+      >
         <Text style={styles.lastUpdate}>{t('ultima_actualizacion')}</Text>
         <Text style={styles.headerTitle}>{t('bienvenida')}</Text>
 
@@ -45,11 +52,26 @@ const PrivacyPolicyScreen = () => {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#FFF' },
+  containerLandscape: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+  },
   scrollContent: { flexGrow: 1, padding: 20, paddingBottom: 80 },
-  lastUpdate: { fontSize: 14, color: '#666', marginBottom: 10 },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 15 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#222', marginTop: 15, marginBottom: 5 },
-  text: { fontSize: 16, color: '#333', marginBottom: 15, textAlign: 'justify' },
+  scrollContentLandscape: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  lastUpdate: { fontSize: 14, color: '#666', marginBottom: 10, width: '100%' },
+  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 15, width: '100%' },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#222', marginTop: 15, marginBottom: 5, width: '100%' },
+  text: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 15,
+    textAlign: 'justify',
+    width: '100%',
+  },
   email: { color: '#007AFF' },
 });
 
